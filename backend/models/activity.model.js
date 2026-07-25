@@ -20,7 +20,7 @@ async function getRecentActivities(limit = 20) {
         activity_logs.action,
         activity_logs.ip_address,
         activity_logs.created_at,
-        users.fullName
+        users.full_name
      FROM activity_logs
      JOIN users
        ON activity_logs.user_id = users.id
