@@ -87,27 +87,42 @@
 
                 <% } else { %>
 
-                    <ul>
+                    <ul style="list-style:none;padding-left:0;">
 
                     <% project.files.forEach(file => { %>
 
-                        <li>
+                        <li style="margin-bottom:15px;">
 
-                            <strong><%= file.file_name %></strong>
-
-                            <small>
-                                (<%= new Date(file.uploaded_at).toLocaleString() %>)
-                            </small>
+                            <strong>📄 <%= file.file_name %></strong>
 
                             <br>
+
+                            <small>
+                                Uploaded:
+                                <%= new Date(file.uploaded_at).toLocaleString() %>
+                            </small>
+
+                            <br><br>
 
                             <a href="/projects/files/<%= file.id %>/download">
                                 Download
                             </a>
 
-                        </li>
+                            &nbsp;|&nbsp;
 
-                        <br>
+                            <form
+                                action="/projects/files/<%= file.id %>/delete"
+                                method="POST"
+                                style="display:inline;"
+                                onsubmit="return confirm('Are you sure you want to delete this file?');">
+
+                                <button type="submit">
+                                    Delete
+                                </button>
+
+                            </form>
+
+                        </li>
 
                     <% }) %>
 
