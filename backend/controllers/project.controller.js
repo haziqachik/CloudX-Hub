@@ -56,7 +56,7 @@ async function uploadProjectFile(req, res) {
       return res.status(404).send("Project not found");
     }
 
-    if (project.user_id !== userId) {
+    if (project.owner_id !== userId) {
       return res.status(403).send("Access denied");
     }
 
