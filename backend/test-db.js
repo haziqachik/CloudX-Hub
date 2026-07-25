@@ -4,7 +4,7 @@ async function testConnection() {
   try {
     const connection = await pool.getConnection();
 
-    const [rows] = await connection.query("SELECT NOW() AS current_time");
+    const [rows] = await connection.query("SELECT 1");
 
     console.log("✅ Connected successfully!");
     console.log(rows);
