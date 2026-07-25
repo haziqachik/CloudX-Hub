@@ -6,7 +6,11 @@ const {
 const projectModel = require("../models/project.model");
 const projectFileModel = require("../models/projectFile.model");
 
-const { uploadFile, downloadFile } = require("../services/s3.service");
+const {
+  uploadFile,
+  downloadFile,
+  deleteFile,
+} = require("../services/s3.service");
 
 // Display the logged-in user's projects.
 async function getProjectsPage(req, res) {
@@ -46,7 +50,7 @@ async function create(req, res) {
   return res.redirect("/projects");
 }
 
-// Handle file upload for a project.
+// Handle file upload
 async function uploadProjectFile(req, res) {
   try {
     const projectId = req.params.id;
@@ -66,10 +70,8 @@ async function uploadProjectFile(req, res) {
       return res.status(400).send("Please select a file.");
     }
 
-    // Upload to S3
     const result = await uploadFile(req.file, projectId);
 
-    // Save metadata
     await projectFileModel.createFile(
       projectId,
       req.file.originalname,
@@ -83,7 +85,7 @@ async function uploadProjectFile(req, res) {
   }
 }
 
-// Download a file
+// Download file
 async function downloadProjectFile(req, res) {
   try {
     const fileId = req.params.fileId;
@@ -97,11 +99,7 @@ async function downloadProjectFile(req, res) {
 
     const project = await projectModel.getProjectById(file.project_id);
 
-    if (!project) {
-      return res.status(404).send("Project not found");
-    }
-
-    if (project.owner_id !== userId) {
+    if (!project || project.owner_id !== userId) {
       return res.status(403).send("Access denied");
     }
 
@@ -123,9 +121,39 @@ async function downloadProjectFile(req, res) {
   }
 }
 
+// Delete file
+async function deleteProjectFile(req, res) {
+  try {
+    const fileId = req.params.fileId;
+    const userId = req.session.user.id;
+
+    const file = await projectFileModel.getFileById(fileId);
+
+    if (!file) {
+      return res.status(404).send("File not found");
+    }
+
+    const project = await projectModel.getProjectById(file.project_id);
+
+    if (!project || project.owner_id !== userId) {
+      return res.status(403).send("Access denied");
+    }
+
+    await deleteFile(file.s3_key);
+
+    await projectFileModel.deleteFile(fileId);
+
+    return res.redirect("/projects");
+  } catch (error) {
+    console.error(error);
+    return res.status(500).send("Delete failed.");
+  }
+}
+
 module.exports = {
   getProjectsPage,
   create,
   uploadProjectFile,
   downloadProjectFile,
+  deleteProjectFile,
 };
