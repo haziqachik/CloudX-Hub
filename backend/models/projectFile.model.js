@@ -6,7 +6,7 @@ async function createFile(projectId, fileName, s3Key) {
     `INSERT INTO project_files
       (project_id, file_name, s3_key)
      VALUES (?, ?, ?)`,
-    [projectId, fileName, s3Key]
+    [projectId, fileName, s3Key],
   );
 
   return result.insertId;
@@ -19,10 +19,22 @@ async function getFilesByProject(projectId) {
      FROM project_files
      WHERE project_id = ?
      ORDER BY uploaded_at DESC`,
-    [projectId]
+    [projectId],
   );
 
   return rows;
+}
+
+// Get a single file by ID
+async function getFileById(fileId) {
+  const [rows] = await pool.query(
+    `SELECT *
+     FROM project_files
+     WHERE id = ?`,
+    [fileId],
+  );
+
+  return rows[0];
 }
 
 // Delete a file record
@@ -30,7 +42,7 @@ async function deleteFile(fileId) {
   const [result] = await pool.query(
     `DELETE FROM project_files
      WHERE id = ?`,
-    [fileId]
+    [fileId],
   );
 
   return result.affectedRows;
@@ -39,5 +51,6 @@ async function deleteFile(fileId) {
 module.exports = {
   createFile,
   getFilesByProject,
+  getFileById,
   deleteFile,
 };
