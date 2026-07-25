@@ -1,56 +1,10 @@
-const {
-  getUserProjects,
-  createProject,
-} = require("../services/project.service");
-
-const projectModel = require("../models/project.model");
-const { uploadFile } = require("../services/s3.service");
-
-// Display the logged-in user's projects.
-async function getProjectsPage(req, res) {
-  const user = req.session.user;
-
-  const projects = await getUserProjects(user.id);
-
-  return res.render("projects", {
-    user,
-    projects,
-    errors: [],
-  });
-}
-
-// Handle creation of a new project.
-async function create(req, res) {
-  const user = req.session.user;
-
-  const { projectName, description } = req.body;
-
-  const result = await createProject({
-    ownerId: user.id,
-    projectName,
-    description,
-  });
-
-  if (!result.success) {
-    const projects = await getUserProjects(user.id);
-
-    return res.status(400).render("projects", {
-      user,
-      projects,
-      errors: [result.error],
-    });
-  }
-
-  return res.redirect("/projects");
-}
-
 // Handle file upload for a project.
 async function uploadProjectFile(req, res) {
   try {
     const projectId = req.params.id;
     const userId = req.session.user.id;
 
-    const { getProjectById } = require("../services/project.service");
+    const project = await projectModel.getProjectById(projectId);
 
     if (!project) {
       return res.status(404).send("Project not found");
@@ -75,9 +29,3 @@ async function uploadProjectFile(req, res) {
     return res.status(500).send("Upload failed.");
   }
 }
-
-module.exports = {
-  getProjectsPage,
-  create,
-  uploadProjectFile,
-};
