@@ -1,12 +1,17 @@
-// Ensure users must be authenticated before accessing protected routes.
-function requireAuth(req, res, next) {
-  if (req.session && req.session.user) {
-    return next();
-  }
+const express = require("express");
+const router = express.Router();
 
-  return res.redirect('/login');
-}
+const {
+  getProjectsPage,
+  create,
+} = require("../controllers/project.controller");
 
-module.exports = {
-  requireAuth,
-};
+const { requireAuth } = require("../middleware/auth.middleware");
+
+// Display all projects belonging to the logged-in user.
+router.get("/", requireAuth, getProjectsPage);
+
+// Create a new project.
+router.post("/", requireAuth, create);
+
+module.exports = router;
