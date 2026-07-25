@@ -92,11 +92,22 @@
                     <% project.files.forEach(file => { %>
 
                         <li>
-                            <%= file.file_name %>
+
+                            <strong><%= file.file_name %></strong>
+
                             <small>
                                 (<%= new Date(file.uploaded_at).toLocaleString() %>)
                             </small>
+
+                            <br>
+
+                            <a href="/projects/files/<%= file.id %>/download">
+                                Download
+                            </a>
+
                         </li>
+
+                        <br>
 
                     <% }) %>
 
