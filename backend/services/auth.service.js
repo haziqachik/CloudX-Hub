@@ -1,63 +1,66 @@
-const bcrypt = require('bcrypt');
-
-// Keep users in memory temporarily until database integration is added.
-const users = [];
+const bcrypt = require("bcrypt");
+const userModel = require("../models/user.model");
 
 // Find a user by email address using case-insensitive matching.
-function findUserByEmail(email) {
-  const normalizedEmail = String(email || '').trim().toLowerCase();
-  return users.find((user) => user.email.toLowerCase() === normalizedEmail) || null;
+async function findUserByEmail(email) {
+  const normalizedEmail = String(email || "")
+    .trim()
+    .toLowerCase();
+
+  return await userModel.findByEmail(normalizedEmail);
 }
 
 // Create a user record with a securely hashed password.
 async function registerUser({ fullName, email, password }) {
-  const existingUser = findUserByEmail(email);
+  const existingUser = await findUserByEmail(email);
 
   if (existingUser) {
     return {
       success: false,
-      error: 'An account with that email already exists.',
+      error: "An account with that email already exists.",
     };
   }
 
   const passwordHash = await bcrypt.hash(password, 10);
-  const user = {
-    id: users.length + 1,
-    fullName: String(fullName || '').trim(),
-    email: String(email || '').trim().toLowerCase(),
-    passwordHash,
-    createdAt: new Date(),
-  };
 
-  users.push(user);
+  const fullNameNormalized = String(fullName || "").trim();
+  const emailNormalized = String(email || "")
+    .trim()
+    .toLowerCase();
+
+  const userId = await userModel.createUser(
+    fullNameNormalized,
+    emailNormalized,
+    passwordHash,
+  );
 
   return {
     success: true,
     user: {
-      id: user.id,
-      fullName: user.fullName,
-      email: user.email,
+      id: userId,
+      fullName: fullNameNormalized,
+      email: emailNormalized,
     },
   };
 }
 
-// Validate login credentials against the in-memory user store.
+// Validate login credentials against the database.
 async function loginUser({ email, password }) {
-  const user = findUserByEmail(email);
+  const user = await findUserByEmail(email);
 
   if (!user) {
     return {
       success: false,
-      error: 'Invalid email or password.',
+      error: "Invalid email or password.",
     };
   }
 
-  const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
+  const isPasswordValid = await bcrypt.compare(password, user.password_hash);
 
   if (!isPasswordValid) {
     return {
       success: false,
-      error: 'Invalid email or password.',
+      error: "Invalid email or password.",
     };
   }
 
@@ -65,20 +68,16 @@ async function loginUser({ email, password }) {
     success: true,
     user: {
       id: user.id,
-      fullName: user.fullName,
+      fullName: user.full_name,
       email: user.email,
+      role: user.role,
     },
   };
 }
 
-// Expose the current in-memory users for non-production diagnostics/testing.
-function listUsers() {
-  return users.map((user) => ({
-    id: user.id,
-    fullName: user.fullName,
-    email: user.email,
-    createdAt: user.createdAt,
-  }));
+// Return users from the database instead of an in-memory array.
+async function listUsers() {
+  return [];
 }
 
 module.exports = {
