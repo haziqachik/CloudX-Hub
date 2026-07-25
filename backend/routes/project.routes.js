@@ -6,12 +6,12 @@ const {
   create,
 } = require("../controllers/project.controller");
 
-const ensureAuthenticated = require("../middleware/auth.middleware");
+const { requireAuth } = require("../middleware/auth.middleware");
 
 // Display all projects belonging to the logged-in user.
-router.get("/", ensureAuthenticated, getProjectsPage);
+router.get("/", requireAuth, getProjectsPage);
 
 // Create a new project.
-router.post("/", ensureAuthenticated, create);
+router.post("/", requireAuth, create);
 
 module.exports = router;
