@@ -1,0 +1,12 @@
+// Ensure users must be authenticated before accessing protected routes.
+function requireAuth(req, res, next) {
+  if (req.session && req.session.user) {
+    return next();
+  }
+
+  return res.redirect('/login');
+}
+
+module.exports = {
+  requireAuth,
+};
