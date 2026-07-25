@@ -5,6 +5,7 @@ const {
   getProjectsPage,
   create,
   uploadProjectFile,
+  downloadProjectFile,
 } = require("../controllers/project.controller");
 
 const { requireAuth } = require("../middleware/auth.middleware");
@@ -23,5 +24,8 @@ router.post(
   upload.single("file"),
   uploadProjectFile,
 );
+
+// Download a file from a project.
+router.get("/files/:fileId/download", requireAuth, downloadProjectFile);
 
 module.exports = router;
