@@ -2,6 +2,7 @@
 const express = require("express");
 const path = require("path");
 const session = require("express-session");
+const helmet = require("helmet");
 
 // Import application routes.
 const authRoutes = require("./routes/auth.routes");
@@ -11,6 +12,19 @@ const indexRoutes = require("./routes/index.routes");
 
 // Create the Express application.
 const app = express();
+
+// ==============================
+// Security Middleware
+// ==============================
+
+// Apply secure HTTP headers.
+app.use(
+  helmet({
+    // Disabled for now because Bootstrap is loaded from a CDN.
+    // We can configure a proper Content Security Policy later.
+    contentSecurityPolicy: false,
+  }),
+);
 
 // ==============================
 // View Engine Configuration
@@ -43,7 +57,11 @@ app.use("/images", express.static(path.join(__dirname, "../frontend/images")));
 app.use(express.json());
 
 // Parse HTML form submissions.
-app.use(express.urlencoded({ extended: true }));
+app.use(
+  express.urlencoded({
+    extended: true,
+  }),
+);
 
 // Configure session support.
 app.use(
