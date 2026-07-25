@@ -6,6 +6,8 @@ const {
 const projectModel = require("../models/project.model");
 const projectFileModel = require("../models/projectFile.model");
 
+const { createActivity } = require("../models/activity.model");
+
 const {
   uploadFile,
   downloadFile,
@@ -47,10 +49,12 @@ async function create(req, res) {
     });
   }
 
+  await createActivity(user.id, "CREATE_PROJECT", req.ip);
+
   return res.redirect("/projects");
 }
 
-// Handle file upload
+// Handle file upload.
 async function uploadProjectFile(req, res) {
   try {
     const projectId = req.params.id;
@@ -78,14 +82,17 @@ async function uploadProjectFile(req, res) {
       result.key,
     );
 
+    await createActivity(userId, "UPLOAD_FILE", req.ip);
+
     return res.redirect("/projects");
   } catch (error) {
     console.error(error);
+
     return res.status(500).send("Upload failed.");
   }
 }
 
-// Download file
+// Download file.
 async function downloadProjectFile(req, res) {
   try {
     const fileId = req.params.fileId;
@@ -105,6 +112,8 @@ async function downloadProjectFile(req, res) {
 
     const result = await downloadFile(file.s3_key);
 
+    await createActivity(userId, "DOWNLOAD_FILE", req.ip);
+
     res.setHeader(
       "Content-Disposition",
       `attachment; filename="${file.file_name}"`,
@@ -117,11 +126,12 @@ async function downloadProjectFile(req, res) {
     result.Body.pipe(res);
   } catch (error) {
     console.error(error);
+
     return res.status(500).send("Download failed.");
   }
 }
 
-// Delete file
+// Delete file.
 async function deleteProjectFile(req, res) {
   try {
     const fileId = req.params.fileId;
@@ -143,9 +153,12 @@ async function deleteProjectFile(req, res) {
 
     await projectFileModel.deleteFile(fileId);
 
+    await createActivity(userId, "DELETE_FILE", req.ip);
+
     return res.redirect("/projects");
   } catch (error) {
     console.error(error);
+
     return res.status(500).send("Delete failed.");
   }
 }
