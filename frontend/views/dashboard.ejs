@@ -70,7 +70,9 @@ Logout
 
 </nav>
 
+
 <div class="container mt-5">
+
 
 <div class="mb-5">
 
@@ -85,7 +87,10 @@ Manage your secure cloud projects and files.
 
 </div>
 
+
+
 <div class="row g-4">
+
 
 <div class="col-md-6">
 
@@ -101,6 +106,7 @@ Manage your secure cloud projects and files.
 
 </div>
 
+
 <div class="col-md-6">
 
 <div class="dashboard-card p-4">
@@ -115,17 +121,24 @@ Manage your secure cloud projects and files.
 
 </div>
 
+
 </div>
+
+
 
 <div class="row mt-4">
 
+
 <div class="col-lg-8">
 
-<div class="section-card p-4">
+
+<div class="section-card p-4 mb-4">
+
 
 <h4>
 Recent Projects
 </h4>
+
 
 <% if(recentProjects.length===0){ %>
 
@@ -133,11 +146,15 @@ Recent Projects
 No projects yet.
 </p>
 
+
 <% }else{ %>
+
 
 <ul class="list-group">
 
+
 <% recentProjects.forEach(project=>{ %>
+
 
 <li class="list-group-item">
 
@@ -157,25 +174,130 @@ Created
 
 </li>
 
+
 <% }) %>
+
 
 </ul>
 
+
 <% } %>
 
-</div>
 
 </div>
+
+
+
+<!-- Recent Activity Section -->
+<div class="section-card p-4">
+
+
+<h4>
+Recent Activity
+</h4>
+
+
+<% if(recentActivities.length===0){ %>
+
+<p class="text-muted">
+No activity recorded yet.
+</p>
+
+
+<% } else { %>
+
+
+<div class="table-responsive">
+
+<table class="table table-hover">
+
+<thead>
+
+<tr>
+
+<th>
+Action
+</th>
+
+<th>
+IP Address
+</th>
+
+<th>
+Time
+</th>
+
+</tr>
+
+</thead>
+
+
+<tbody>
+
+
+<% recentActivities.forEach(activity=>{ %>
+
+
+<tr>
+
+<td>
+
+<strong>
+<%= activity.action %>
+</strong>
+
+</td>
+
+
+<td>
+<%= activity.ip_address || "Unknown" %>
+</td>
+
+
+<td>
+
+<%= new Date(activity.created_at).toLocaleString() %>
+
+</td>
+
+
+</tr>
+
+
+<% }) %>
+
+
+</tbody>
+
+</table>
+
+</div>
+
+
+<% } %>
+
+
+</div>
+
+
+</div>
+
+
+
 
 <div class="col-lg-4">
 
+
 <div class="section-card p-4">
+
 
 <h4>
 Quick Actions
 </h4>
 
+
 <div class="d-grid gap-3 mt-3">
+
 
 <a
 href="/projects"
@@ -185,6 +307,7 @@ Manage Projects
 
 </a>
 
+
 <a
 href="/projects"
 class="btn btn-success">
@@ -192,6 +315,7 @@ class="btn btn-success">
 Upload Files
 
 </a>
+
 
 <a
 href="/logout"
@@ -201,15 +325,21 @@ Logout
 
 </a>
 
-</div>
 
 </div>
 
-</div>
 
 </div>
 
+
 </div>
+
+
+</div>
+
+
+</div>
+
 
 </body>
 </html>

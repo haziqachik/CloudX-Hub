@@ -1,9 +1,15 @@
 const pool = require("../config/db");
 
+const {
+  getRecentActivities,
+} = require("../models/activity.model");
+
+
 // Render the authenticated dashboard page.
 async function getDashboardPage(req, res) {
   try {
     const user = req.session.user;
+
 
     // Total projects
     const [projectRows] = await pool.query(
@@ -12,6 +18,7 @@ async function getDashboardPage(req, res) {
        WHERE owner_id = ?`,
       [user.id],
     );
+
 
     // Total uploaded files
     const [fileRows] = await pool.query(
@@ -23,6 +30,7 @@ async function getDashboardPage(req, res) {
       [user.id],
     );
 
+
     // Recent projects
     const [recentProjects] = await pool.query(
       `SELECT project_name, created_at
@@ -33,17 +41,29 @@ async function getDashboardPage(req, res) {
       [user.id],
     );
 
+
+    // Recent activity logs
+    const recentActivities = await getRecentActivities(10);
+
+
     return res.render("dashboard", {
       user,
       totalProjects: projectRows[0].totalProjects,
       totalFiles: fileRows[0].totalFiles,
       recentProjects,
+      recentActivities,
     });
+
+
   } catch (error) {
+
     console.error(error);
+
     return res.status(500).send("Unable to load dashboard.");
+
   }
 }
+
 
 module.exports = {
   getDashboardPage,
