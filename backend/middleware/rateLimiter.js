@@ -6,13 +6,13 @@ const loginLimiter = rateLimit({
   // 15-minute time window.
   windowMs: 15 * 60 * 1000,
 
-  // Allow a maximum of 5 requests per IP.
+  // Allow only 5 login attempts per IP.
   max: 5,
 
-  // Return rate limit information in the response headers.
+  // Return standard rate limit headers.
   standardHeaders: true,
 
-  // Disable the legacy X-RateLimit-* headers.
+  // Disable legacy rate limit headers.
   legacyHeaders: false,
 
   // Message returned when the limit is exceeded.
