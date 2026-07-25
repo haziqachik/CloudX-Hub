@@ -1,0 +1,23 @@
+{
+  "name": "cloudx-hub",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@aws-sdk/client-cloudtrail": "^3.1095.0",
+    "@aws-sdk/client-kms": "^3.1095.0",
+    "@aws-sdk/client-s3": "^3.1095.0",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1"
+  }
+}
