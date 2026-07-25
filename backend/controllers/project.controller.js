@@ -3,6 +3,9 @@ const {
   createProject,
 } = require("../services/project.service");
 
+const projectModel = require("../models/project.model");
+const { uploadFile } = require("../services/s3.service");
+
 // Display the logged-in user's projects.
 async function getProjectsPage(req, res) {
   const user = req.session.user;
@@ -41,7 +44,40 @@ async function create(req, res) {
   return res.redirect("/projects");
 }
 
+// Handle file upload for a project.
+async function uploadProjectFile(req, res) {
+  try {
+    const projectId = req.params.id;
+    const userId = req.session.user.id;
+
+    const { getProjectById } = require("../services/project.service");
+
+    if (!project) {
+      return res.status(404).send("Project not found");
+    }
+
+    if (project.user_id !== userId) {
+      return res.status(403).send("Access denied");
+    }
+
+    if (!req.file) {
+      return res.status(400).send("Please select a file.");
+    }
+
+    const result = await uploadFile(req.file, projectId);
+
+    return res.json({
+      message: "File uploaded successfully!",
+      file: result,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).send("Upload failed.");
+  }
+}
+
 module.exports = {
   getProjectsPage,
   create,
+  uploadProjectFile,
 };

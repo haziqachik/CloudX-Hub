@@ -25,7 +25,19 @@ async function createProject(ownerId, projectName, description) {
   return result.insertId;
 }
 
+async function getProjectById(projectId) {
+  const [rows] = await pool.query(
+    `SELECT *
+     FROM projects
+     WHERE id = ?`,
+    [projectId],
+  );
+
+  return rows[0];
+}
+
 module.exports = {
   getProjectsByUser,
   createProject,
+  getProjectById,
 };
