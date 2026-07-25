@@ -4,6 +4,7 @@ const {
 } = require("../services/project.service");
 
 const projectModel = require("../models/project.model");
+const projectFileModel = require("../models/projectFile.model");
 const { uploadFile } = require("../services/s3.service");
 
 // Display the logged-in user's projects.
@@ -64,7 +65,15 @@ async function uploadProjectFile(req, res) {
       return res.status(400).send("Please select a file.");
     }
 
+    // Upload the file to Amazon S3
     const result = await uploadFile(req.file, projectId);
+
+    // Save the uploaded file metadata into MySQL
+    await projectFileModel.createFile(
+      projectId,
+      req.file.originalname,
+      result.key,
+    );
 
     return res.json({
       message: "File uploaded successfully!",

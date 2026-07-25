@@ -79,6 +79,33 @@
 
                 <hr>
 
+                <h4>Uploaded Files</h4>
+
+                <% if (project.files.length === 0) { %>
+
+                    <p>No files uploaded yet.</p>
+
+                <% } else { %>
+
+                    <ul>
+
+                    <% project.files.forEach(file => { %>
+
+                        <li>
+                            <%= file.file_name %>
+                            <small>
+                                (<%= new Date(file.uploaded_at).toLocaleString() %>)
+                            </small>
+                        </li>
+
+                    <% }) %>
+
+                    </ul>
+
+                <% } %>
+
+                <hr>
+
                 <form
                     action="/projects/<%= project.id %>/upload"
                     method="POST"
