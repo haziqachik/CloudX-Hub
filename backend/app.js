@@ -6,6 +6,7 @@ const session = require("express-session");
 // Import application routes.
 const authRoutes = require("./routes/auth.routes");
 const dashboardRoutes = require("./routes/dashboard.routes");
+const projectRoutes = require("./routes/project.routes");
 const indexRoutes = require("./routes/index.routes");
 
 // Create the Express application.
@@ -46,11 +47,11 @@ app.use(express.urlencoded({ extended: true }));
 
 // Configure session support.
 app.use(
-    session({
-        secret: process.env.SESSION_SECRET || "cloudxhub-dev-secret",
-        resave: false,
-        saveUninitialized: false,
-    })
+  session({
+    secret: process.env.SESSION_SECRET || "cloudxhub-dev-secret",
+    resave: false,
+    saveUninitialized: false,
+  }),
 );
 
 // ==============================
@@ -60,6 +61,7 @@ app.use(
 // Register all application routes.
 app.use("/", authRoutes);
 app.use("/", dashboardRoutes);
+app.use("/projects", projectRoutes);
 app.use("/", indexRoutes);
 
 // ==============================
