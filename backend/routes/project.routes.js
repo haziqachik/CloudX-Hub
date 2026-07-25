@@ -6,6 +6,7 @@ const {
   create,
   uploadProjectFile,
   downloadProjectFile,
+  deleteProjectFile,
 } = require("../controllers/project.controller");
 
 const { requireAuth } = require("../middleware/auth.middleware");
@@ -27,5 +28,8 @@ router.post(
 
 // Download a file from a project.
 router.get("/files/:fileId/download", requireAuth, downloadProjectFile);
+
+// Delete a file from a project.
+router.post("/files/:fileId/delete", requireAuth, deleteProjectFile);
 
 module.exports = router;
