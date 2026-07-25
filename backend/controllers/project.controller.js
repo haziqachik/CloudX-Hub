@@ -75,10 +75,8 @@ async function uploadProjectFile(req, res) {
       result.key,
     );
 
-    return res.json({
-      message: "File uploaded successfully!",
-      file: result,
-    });
+    // Redirect back to the Projects page
+    return res.redirect("/projects");
   } catch (error) {
     console.error(error);
     return res.status(500).send("Upload failed.");
