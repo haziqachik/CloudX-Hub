@@ -13,6 +13,9 @@ const indexRoutes = require("./routes/index.routes");
 // Create the Express application.
 const app = express();
 
+// Trust AWS reverse proxy/load balancer headers.
+app.set("trust proxy", 1);
+
 // ==============================
 // Security Middleware
 // ==============================
