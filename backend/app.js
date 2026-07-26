@@ -2,7 +2,11 @@
 const express = require("express");
 const path = require("path");
 const session = require("express-session");
+const MySQLStore = require("express-mysql-session")(session);
 const helmet = require("helmet");
+
+// Import database connection.
+const db = require("./config/db");
 
 // Import application routes.
 const authRoutes = require("./routes/auth.routes");
@@ -66,12 +70,40 @@ app.use(
   }),
 );
 
+// ==============================
+// RDS MySQL Session Storage
+// ==============================
+
+// Store Express sessions inside RDS instead of server memory.
+const sessionStore = new MySQLStore(
+  {
+    clearExpired: true,
+
+    // Remove expired sessions every 15 minutes.
+    checkExpirationInterval: 900000,
+
+    // Session expiry time: 24 hours.
+    expiration: 86400000,
+  },
+  db,
+);
+
 // Configure session support.
 app.use(
   session({
     secret: process.env.SESSION_SECRET || "cloudxhub-dev-secret",
+
+    store: sessionStore,
+
     resave: false,
+
     saveUninitialized: false,
+
+    cookie: {
+      secure: false,
+      httpOnly: true,
+      maxAge: 86400000,
+    },
   }),
 );
 
